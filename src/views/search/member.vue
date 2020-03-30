@@ -10,6 +10,9 @@
         <el-form-item label="用户ID">
           <el-input v-model="searchData.id" placeholder="用户ID"></el-input>
         </el-form-item>
+        <el-form-item label="用户名">
+          <el-input v-model="searchData.name" placeholder="用户手机号"></el-input>
+        </el-form-item>
         <el-form-item label="用户手机号">
           <el-input v-model="searchData.mobile" placeholder="用户手机号"></el-input>
         </el-form-item>
@@ -34,6 +37,7 @@
       <div class="item-content">
         <el-table :data="tableData" border empty-text="暂无数据" style="width: 100%">
           <el-table-column prop="id" label="ID"></el-table-column>
+          <el-table-column prop="name" label="用户名"></el-table-column>
           <el-table-column prop="level" label="级别"></el-table-column>
           <el-table-column label="下级用户">
             <template slot-scope="scope">{{ Number(scope.row.childCnt) }}人</template>
@@ -76,6 +80,7 @@ export default {
         id: null,
         fatherId: null,
         level: null,
+        name:null,
         mobile:null
       },
       options: [
@@ -111,7 +116,7 @@ export default {
       });
     },
     onSubmit() {
-      this.pageDate.pageNum=1
+      this.pageDate= { pageSize: 0, pages: 1, pageNum: 1 };
       this.getList();
     },
     getList() {

@@ -3,11 +3,14 @@
     <div class="page-title">
       <div class="left">当前状态</div>
     </div>
-    <!-- <el-alert style="margin-bottom:10px;" title="测试提示" type="error"></el-alert> -->
     <div class="mytaskitem">
-      <!-- <div class="item-title"><span class="name"><i class="el-icon-menu" />我的任务</span></div> -->
+      <div class="item-title">
+        <span class="name">
+          <i class="el-icon-menu" />我的任务
+        </span>
+      </div>
       <div class="rowcenter item-content">
-        <div class="item" @click="taskClick(0)">
+        <div class="item" @click="taskClick(100)">
           <el-card
             shadow="hover"
             :body-style="{background:'#409EFF',color:'#fff',fontSize:'14px',cursor: 'pointer'}"
@@ -51,12 +54,12 @@
             </div>
           </el-card>
         </div>
-        <!-- <div class="item" @click='taskClick(5)'>
+        <div class="item" @click='taskClick(101)'>
           <el-card shadow="hover" :body-style="{background:'#67C23A',color:'#fff',fontSize:'14px',cursor: 'pointer'}">
-            <div style="font-size:24px">{{pageData.orderUserCnt}}</div>
-            <div><br/>正在接单用户</div>
+            <div style="font-size:24px">{{pageData.iffyCnt}}</div>
+            <div><br/>问题订单</div>
           </el-card>
-        </div>-->
+        </div>
       </div>
     </div>
     <div class="mytaskitem">
@@ -64,7 +67,6 @@
         <span class="name">
           <i class="el-icon-menu" />今日概况
         </span>
-        <!-- <el-button type="primary" size='small' round @click='taskClick(1)'>查看全部</el-button> -->
       </div>
       <el-row class="row" style="margin-bottom:10px;">
         <el-col :span="8">
@@ -95,39 +97,6 @@
         </el-col>
       </el-row>
     </div>
-    <!-- <div class="mytaskitem">
-      <div class="item-title">
-        <span class="name"><i class="el-icon-menu" />24小时概况</span>
-      </div>
-      <el-row class="row" style="margin-bottom:10px;">
-        <el-col :span="8">
-          <label class="name">流水合计</label>
-          <span>￥{{pageData.totalAmount24}}</span>
-        </el-col>
-         <el-col :span="8">
-          <label class="name">充值金额</label>
-          <span>￥{{pageData.chargeAmount24}}</span>
-        </el-col>
-        <el-col :span="8">
-          <label class="name">红利合计</label>
-          <span border>￥{{pageData.awardAmount24}}</span>
-        </el-col>
-      </el-row>
-      <el-row class="row">
-        <el-col :span="8">
-          <label class="name">完成/收到订单</label>
-          <span>{{pageData.finishOrderCnt24}}个/{{pageData.receOrderCnt24}}个({{((pageData.finishOrderCnt24/pageData.receOrderCnt24)*100).toFixed(2)+'%'}})</span>
-        </el-col>
-         <el-col :span="8">
-          <label class="name">提现金额</label>
-          <span>￥{{pageData.withdrawAmount24}}</span>
-        </el-col>
-        <el-col :span="8">
-          <label class="name">接单用户</label>
-          <span border>{{pageData.orderUserCnt24}}人</span>
-        </el-col>
-      </el-row>
-    </div>-->
   </div>
 </template>
 
@@ -144,9 +113,9 @@ export default {
   },
   methods: {
     taskClick(num) {
-      if (num == 0 || num == 2) {
+      if (num == 0 || num == 2 || num == 100 || num == 101 ) {
         sessionStorage.setItem("state", num);
-        this.$router.push({ path: "/search/orderSearch" });
+        this.$router.push({ path: "/order" });
       } else if (num == 3) {
         sessionStorage.setItem("state", "0");
         this.$router.push({ path: "/search/withdrawSearch" });

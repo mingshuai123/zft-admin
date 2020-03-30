@@ -47,7 +47,7 @@
                     v-if="scope.row.top==1"
                   >取消置顶</el-button>
                   <el-button type="warning" size="mini" @click="handleClick(1,scope.row,'top')" v-else>置顶</el-button>
-                  <el-button type="danger" size="mini" @click="handleClick(3,scope.row,'del')">删除</el-button>
+                  <el-button type="danger" size="mini" @click="handleClick(0,scope.row,'del')">删除</el-button>
                 </template>
               </el-table-column>
             </el-table>

@@ -12,7 +12,7 @@
       <div class="mytaskitem">
         <el-form :inline="true" class="demo-form-inline">
           <el-form-item label="选择商户">
-            <el-select v-model="cpId" placeholder="请选择">
+            <el-select v-model="cpId" placeholder="请选择" @change="getReport">
               <el-option
                 v-for="(item,index) in options"
                 :key="index"
@@ -67,15 +67,15 @@ export default {
     };
   },
   watch: {
-    cpId: function(val) {
-      this.getReport();
-    }
+    // cpId: function(val) {
+    //   this.getReport();
+    // }
   },
   created() {
     this.getcplist();
     this.cpId = String(this.$route.query.id);
+    this.getReport()
     this.date = this.getNowFormatDate();
-
   },
   methods: {
     getcplist() {

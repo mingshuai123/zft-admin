@@ -110,6 +110,36 @@ function apiAxios2 (method, url,data, params) {
       })
   })
 }
+function apiAxios3 (method, url,params) {
+  let token = sessionStorage.getItem('logininfo')?JSON.parse(sessionStorage.getItem('logininfo')).token:'';
+
+  let httpDefault = {
+    headers:{
+      'Content-Type': 'application/json'
+    },
+    method: method,
+    // baseURL: baseURL,
+    url: url,
+    // `params` 是即将与请求一起发送的 URL 参数
+    // `data` 是作为请求主体被发送的数据
+    // params: method === 'GET' || method === 'DELETE' ? params : null,
+    params:params,
+    // data: JSON.stringify(data),
+    // data: params,
+    timeout: 10000
+  }
+
+  return new Promise((resolve, reject) => {
+    axios(httpDefault)
+      .then((res) => {
+        successState(res)
+        resolve(res)
+      }).catch((response) => {
+        errorState(response)
+        reject(response)
+      })
+  })
+}
 // 输出函数getAxios、postAxios、putAxios、delectAxios，供其他文件调用-----------------------------
 // Vue.js的插件应当有一个公开方法 install。这个方法的第一个参数是 Vue 构造器，第二个参数是一个可选的选项对象。
 export default {
@@ -117,7 +147,8 @@ export default {
     Vue.prototype.getAxios = (url, params) => apiAxios('GET', url, params)
     Vue.prototype.postAxios = (url, params) => apiAxios('POST', url, params)
     Vue.prototype.postAxios2 = (url,data, params) => apiAxios2('POST', url,data, params)
-    Vue.prototype.putAxios = (url, params) => apiAxios('PUT', url, params)
+    Vue.prototype.postAxios3 = (url,data, params) => apiAxios3('POST', url,data)
+    Vue.prototype.putAxios = (url, data) => apiAxios('PUT', url, data)
     Vue.prototype.delectAxios = (url, params) => apiAxios('DELECT', url, params)
   }
 }

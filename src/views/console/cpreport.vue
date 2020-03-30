@@ -46,8 +46,17 @@
               slot-scope="scope"
             >￥{{ Number(scope.row.amount)- Number(scope.row.cpCommission)}}</template>
           </el-table-column>
-          <el-table-column label="当前分成比例">
-            <template slot-scope="scope">{{ Number(scope.row.ratio)*100+'%' }}</template>
+          <el-table-column label="微信分成比例">
+            <template slot-scope="scope">{{ (Number(scope.row.wxRatio)*100).toFixed(2)+'%' }}</template>
+          </el-table-column>
+          <el-table-column label="支付宝分成比例">
+            <template slot-scope="scope">{{ (Number(scope.row.alipayRatio)*100).toFixed(2)+'%' }}</template>
+          </el-table-column>
+          <el-table-column label="云闪付分成比例">
+            <template slot-scope="scope">{{ (Number(scope.row.unionpayRatio)*100).toFixed(2)+'%' }}</template>
+          </el-table-column>
+          <el-table-column label="银行卡分成比例">
+            <template slot-scope="scope">{{ (Number(scope.row.bankRatio)*100).toFixed(2)+'%' }}</template>
           </el-table-column>
           <el-table-column label="操作" fixed="right" width="100PX" v-if="roleId==1">
             <template slot-scope="scope">

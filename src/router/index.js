@@ -67,11 +67,11 @@ const createRouter = () => new Router({
   routes: constantRoutes
 })
 export const dynamicRouter = [
-  // 商户
+  // 高级商户
   {
     path: '/',
     component: Layout,
-    redirect: '/cpreport',
+    redirect: '/cpconsole',
     name:'shanghu',
     meta: { title: '工作台', icon: 'dashboard',roles:3},
     alwaysShow:true,
@@ -85,7 +85,7 @@ export const dynamicRouter = [
       {
         path: 'cpreport',
         name: 'cpreport',
-        component: () => import('@/views/console/cpreport'),
+        component: () => import('@/views/shanghu/report'),
         meta: { title: '商户概况', icon: 'dashboard'},
       },
       {
@@ -93,6 +93,12 @@ export const dynamicRouter = [
         name: 'orderSearch',
         component: () => import('@/views/search/order.vue'),
         meta: { title: '订单查询', icon: 'dashboard'},
+      },
+      {
+        path: 'orderList',
+        name: 'orderList',
+        component: () => import('@/views/shanghu/order'),
+        meta: { title: '订单列表', icon: 'dashboard'}
       },
       {
         path: 'cpdayreport',
@@ -103,7 +109,7 @@ export const dynamicRouter = [
       },
     ]
   },
-  // 添加订单
+  // 普通商户
   {
     path: '/',
     component: Layout,
@@ -114,8 +120,14 @@ export const dynamicRouter = [
       {
         path: 'cpreport',
         name: 'cpreport',
-        component: () => import('@/views/console/cpreport'),
+        component: () => import('@/views/shanghu/report'),
         meta: { title: '商户概况', icon: 'dashboard'}
+      },
+      {
+        path: 'orderList',
+        name: 'orderList',
+        component: () => import('@/views/shanghu/order.vue'),
+        meta: { title: '订单列表', icon: 'dashboard'}
       },
       {
         path: 'addorder',
@@ -125,7 +137,7 @@ export const dynamicRouter = [
       },
     ]
   },
-  // 个人首页
+  // 管理员
   {
     path: '/',
     component: Layout,
@@ -158,6 +170,12 @@ export const dynamicRouter = [
         component: () => import('@/views/console/report'),
         meta: { title: '每日报表', icon: 'dashboard'}
       },
+      // {
+      //   path: 'iffyOrder',
+      //   name: 'iffyOrder',
+      //   component: () => import('@/views/console/iffyOrder'),
+      //   meta: { title: '待处理订单', icon: 'dashboard'}
+      // },
       {
         path: 'order',
         name: 'order',
@@ -179,7 +197,6 @@ export const dynamicRouter = [
      
     ]
   },
-// 搜索
   {
     path: '/search',
     component: Layout,

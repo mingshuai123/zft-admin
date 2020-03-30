@@ -23,9 +23,23 @@ Vue.use(axiosApi)
 
 import axios from 'axios';
 axios.defaults.headers = {
-	"Content-Type": "application/json"
+  "Content-Type": "application/json"
 };
-Vue.prototype.$axios=axios;
+Vue.prototype.$axios = axios;
+Vue.prototype.stateCN = {
+  0: "未分配",
+  1: "已分配",
+  2: "已接单",
+  3: "超时",
+  4: "关闭",
+  5: "完成",
+  6: "已查看",
+  7: "已支付",
+  8: "确认完成",
+  9: "金额不符",
+  10: "未收到款",
+  11: "确认关闭",
+}
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api
@@ -45,10 +59,10 @@ Vue.prototype.$axios=axios;
 Vue.use(ElementUI, { locale })
 
 Vue.config.productionTip = false
-Vue.prototype.roletype=
-{
-  '1':'管理员','2':'审核员','3':'星评员', '4':'星评管理员',  '5':'星评超级管理员', '6':'全国星评','7':'业主'
-}
+Vue.prototype.roletype =
+  {
+    '1': '管理员', '2': '审核员', '3': '星评员', '4': '星评管理员', '5': '星评超级管理员', '6': '全国星评', '7': '业主'
+  }
 new Vue({
   el: '#app',
   router,

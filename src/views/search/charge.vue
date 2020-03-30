@@ -83,7 +83,7 @@
           </el-table-column>
           <el-table-column label="申请人">
              <template slot-scope="scope">
-               {{scope.row.mobile}}{{scope.row.username?'('+scope.row.username+')':'' }}
+               <span style="font-weight:bold;">{{scope.row.username}}</span>{{scope.row.mobile?'('+scope.row.mobile+')':'' }}
              </template>
           </el-table-column>
           <el-table-column label="金额" sortable prop="amount" width="180">
@@ -104,6 +104,7 @@
           </el-table-column>
         </el-table>
         <el-pagination
+        v-if='pageDate.pages'
           background
           layout="prev, pager, next"
           :page-count="pageDate.pages"
@@ -158,6 +159,10 @@ export default {
       this.searchData.state = Number(sessionStorage.getItem("state"));
       sessionStorage.removeItem("state");
     }
+    if (sessionStorage.getItem("userid")) {
+      this.searchData.uid = Number(sessionStorage.getItem("userid"));
+      sessionStorage.removeItem("userid");
+    }
     this.getList();
   },
   methods: {
@@ -170,7 +175,7 @@ export default {
       });
     },
     onSubmit() {
-      this.pageDate.pageNum=1
+      this.pageDate= { pageSize: 0, pages: 1, pageNum: 1 };
       this.getList();
     },
     getList() {

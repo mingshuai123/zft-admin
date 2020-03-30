@@ -30,6 +30,9 @@
         <el-button type="primary" @click="submitback">确 定</el-button>
       </span>
     </el-dialog>
+    <el-dialog :visible.sync="dialogVisible4" width="30%" :before-close="closeloding">
+      <div v-loading="dialogVisible4" element-loading-text="等待接单" style="height:300px"></div>
+    </el-dialog>
   </div>
 </template>
 
@@ -41,12 +44,14 @@ export default {
   directives: { waves },
   data() {
     return {
+      info:{},
       roleId: 0,
       searchData: {
         amount: "",
         pay: "wx"
       },
       dialogVisible: false,
+      dialogVisible4:false,
       options: [
         { value: 'wx', label: "微信" },
         { value: 'alipay', label: "支付宝" },
@@ -71,12 +76,77 @@ export default {
           message: res.message,
           onClose: function() {
             _this.dialogVisible = false;
+            _this.info=res.data;
+            _this.payurl();
           }
         });
       });
     },
     onSubmit() {
       this.dialogVisible=true;
+    },
+    payurl() {
+      var info=this.info;
+      var data = {
+        cp_id: info.cpId,
+        order_id: info.orderId
+      };
+      this.postAxios("cp/payment/param/get", data).then(res => {
+        if (res.code == 0) {
+          this.payUrl = res.data;
+          this.urldata = this.parseQueryString(res.data);
+          this.getDetail();
+        }
+      });
+    },
+    parseQueryString(url) {
+      var params = {};
+      var arr = url.split("?");
+      if (arr.length <= 1) {
+        return params;
+      }
+      arr = arr[1].split("&");
+      for (var i = 0, l = arr.length; i < l; i++) {
+        var a = arr[i].split("=");
+        params[a[0]] = a[1];
+      }
+      return params;
+    },
+    getDetail() {
+      var _this = this;
+      var postData = {
+        cpId: _this.urldata.cpId,
+        orderId: _this.urldata.orderId,
+        time: _this.urldata.time,
+        nonce: _this.urldata.nonce,
+        sign: _this.urldata.sign
+      };
+      var postUrl = "https://www.zhifutongzhushou.com/api/order/cp/get";
+      for (var key in postData) {
+        if (postUrl.indexOf("?") < 0) {
+          postUrl = postUrl + "?" + key + "=" + postData[key];
+        } else {
+          postUrl = postUrl + "&" + key + "=" + postData[key];
+        }
+      }
+      this.postAxios3(postUrl, {}).then(res => {
+        clearInterval(_this.timeNmae)
+        this.dialogVisible4=true;
+        if (res.code==0&&res.data.state != 0) {
+          this.dialogVisible4=false;
+          // loading.close();
+          window.open(this.payUrl)
+        } else {
+           this.timeNmae=setInterval(() => {
+            _this.getDetail();
+          }, 5000);
+          
+        }
+      });
+    },
+    closeloding(){
+      clearInterval(this.timeNmae)
+      this.dialogVisible4=false;
     },
   }
 };

@@ -40,9 +40,9 @@ router.beforeEach(async(to, from, next) => {
       if(role==1){
         router.push({path:'/console'})
       }else if(role==3){
-        router.push({path:'/cpreport'})
+        router.push({path:'/cpconsole'})
       }else if(role==2){
-        router.push({path:'/addorder'})
+        router.push({path:'/cpreport'})
       }
     }
     

@@ -83,7 +83,7 @@
           </el-table-column>
           <el-table-column label="申请人">
              <template slot-scope="scope">
-               {{scope.row.mobile}}{{scope.row.username?'('+scope.row.username+')':'' }}
+               {{scope.row.username}}{{scope.row.mobile?'('+scope.row.mobile+')':'' }}
              </template>
           </el-table-column>
           <el-table-column label="金额" sortable prop="amount" width="180">
@@ -149,6 +149,10 @@ export default {
     if (sessionStorage.getItem("state")) {
       this.searchData.state = Number(sessionStorage.getItem("state"));
       sessionStorage.removeItem("state");
+    }
+    if (sessionStorage.getItem("userid")) {
+      this.searchData.uid = Number(sessionStorage.getItem("userid"));
+      sessionStorage.removeItem("userid");
     }
     this.getList();
   },

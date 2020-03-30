@@ -2,11 +2,11 @@
   <div class="mytask-container">
     <div class="page-title">
       <div class="left">
-        <i class="el-icon-bell" />订单查询
+        <i class="el-icon-bell" />订单
       </div>
     </div>
     <div class="mytaskitem">
-      <el-form :inline="true" :model="searchData" class="demo-form-inline">
+      <!-- <el-form :inline="true" :model="searchData" class="demo-form-inline">
         <el-form-item label="订单ID">
           <el-input v-model="searchData.orderId" placeholder="订单ID"></el-input>
         </el-form-item>
@@ -84,10 +84,10 @@
         <el-form-item>
           <el-button type="primary" @click="onSubmit">查询</el-button>
         </el-form-item>
-      </el-form>
+      </el-form>-->
       <div class="pageinfo">每页{{pageDate.pageSize}}条 共{{pageDate.pages}}页</div>
       <div class="item-content">
-        <el-table :data="tableData" border empty-text="暂无数据" style="width: 100%">
+        <el-table :data="tableData" border empty-text="暂无数据" style="width: 100%" >
           <el-table-column prop="orderId" label="订单ID"></el-table-column>
           <el-table-column label="状态">
             <template slot-scope="scope">{{stateCN[scope.row.state]}}</template>
@@ -97,14 +97,12 @@
             <template slot-scope="scope">￥{{ Number(scope.row.amount) }}</template>
           </el-table-column>
           <el-table-column label="收款方式">
-            <template
-              slot-scope="scope"
-            >{{ scope.row.state==0||scope.row.orderPayeeAccount==null?'未接单':typeCN[scope.row.orderPayeeAccount.channel]}}</template>
+            <template slot-scope="scope">{{ typeCN[scope.row.payType]}}</template>
           </el-table-column>
           <el-table-column label="收款账号">
             <template
               slot-scope="scope"
-            >{{ scope.row.state==0||scope.row.orderPayeeAccount==null?'未接单':scope.row.orderPayeeAccount.accountNo}}</template>
+            >{{ (scope.row.state==0||scope.row.orderPayeeAccoun==null)?'':(scope.row.payType=='wx'?scope.row.orderPayeeAccount.realname:scope.row.orderPayeeAccount.accountNo)}}</template>
           </el-table-column>
           <el-table-column label="附言">
             <template slot-scope="scope">{{ scope.row.memo}}</template>
@@ -113,7 +111,7 @@
           <el-table-column label="接单员">
             <template
               slot-scope="scope"
-            >{{scope.row.username}}{{scope.row.mobile?'('+scope.row.mobile+')':'' }}</template>
+            >{{scope.row.mobile}}{{scope.row.username?'('+scope.row.username+')':'' }}</template>
           </el-table-column>
           <el-table-column label="红利">
             <template slot-scope="scope">￥{{ Number(scope.row.awardAmount)}}</template>
@@ -126,38 +124,29 @@
           <el-table-column prop="cpName" label="商户"></el-table-column>
           <el-table-column prop="userGetDate" label="接单时间"></el-table-column>
           <el-table-column prop="finishDate" label="完成时间"></el-table-column>
-          <el-table-column label="操作" fixed="right" width="260">
+          <el-table-column label="操作" fixed="right" width="200">
             <template slot-scope="scope">
-              <div style="display:flex;justify-content:space-around;margin:5px auto;">
+              <div style="display:flex;justify-content:space-around;margin:10px auto;">
                 <el-button
                   class="button"
                   type="primary"
                   size="mini"
-                  @click="openskfs(scope.row)"
+                  @click="qrcodeshow(scope.row)"
                 >收款方式</el-button>
-                <el-button
-                  class="button"
-                  type="primary"
-                  size="mini"
-                  @click="watchqrcode(scope.row)"
-                >收款凭证</el-button>
-                <el-button class="button" type="primary" size="mini" @click="finishdialog(scope.row)">完成该单</el-button>
-                <!-- <el-button class="button" type="primary" size="mini">关闭订单</el-button> -->
+                <el-button class="button" type="primary" size="mini" @click="payurl(scope.row)">支付页</el-button>
+
+                <!-- <el-button type="primary" class="button" size="mini">关闭订单</el-button> -->
               </div>
-              <div style="display:flex;margin:5px auto;">
-                <el-button
-                  class="button"
-                  type="primary"
-                  size="mini"
-                  @click="repairclick(scope.row)"
-                >补单</el-button>
+              <!-- <div style="display:flex;justify-content:space-around;margin:10px auto;">
+                <el-button type="primary" size="mini" @click="repairclick(scope.row)">补单</el-button>
                 <el-button
                   class="button"
                   type="primary"
                   size="mini"
                   @click="backclick(scope.row)"
-                >退 单</el-button>
-              </div>
+                >退单</el-button>
+                <el-button class="button" type="primary" size="mini" @click="payurl(scope.row)">支付页</el-button>
+              </div> -->
             </template>
           </el-table-column>
         </el-table>
@@ -169,29 +158,17 @@
         ></el-pagination>
       </div>
     </div>
-    <!-- 收款方式 -->
-    <el-dialog title="查看收款方式" :visible.sync="dialogVisible4" width="60%">
-      <div class="item">收款方式:{{skfs.payType}}</div>
-      <div
-        class="item"
-      >收款人:{{skfs.orderPayeeAccount?(skfs.orderPayeeAccount.channel=='wx'?skfs.orderPayeeAccount.realname:skfs.orderPayeeAccount.accountNo):'--'}}</div>
-      <img
-        :src="skfs.orderPayeeAccount?'https://res.zhifutongzhushou.com/'+skfs.orderPayeeAccount.qrcode:''"
-        alt
-        style="display:block;margin:10px auto;width:200px"
-      />
-    </el-dialog>
-    <!-- 查看收款凭证 -->
-    <el-dialog title="查看收款凭证" :visible.sync="dialogVisible" width="50%" center>
-      <!-- <div>收款方式:{{qrcodeTitle}}</div> -->
-      <!-- <div>收款人:{{qrcodeinfo.accountNo}}</div> -->
-      <img :src="qrcode" alt style="display:block;margin:10px auto;width:300px" />
+    <!-- 二维码 -->
+    <el-dialog title="收款方式" :visible.sync="dialogVisible" width="50%" center>
+      <div>收款方式:{{title}}</div>
+      <div>收款人:{{qrcodeinfo.realname?qrcodeinfo.realname:qrcodeinfo.accountNo}}</div>
+      <img :src="qrcode" style="display:block;margin:20px auto;width:200px;" alt="二维码" />
     </el-dialog>
     <!-- 退单 -->
     <el-dialog title="退单" :visible.sync="dialogVisible2" width="30%" center>
-      <div class="item">是否关闭订单？关闭后，订单将失败。</div>
-      <div>订单金额：￥{{nowitem.amount}}</div>
-      <div>退还保证金：￥{{nowitem.confirmAmount}}</div>
+      <div>确认退单么？</div>
+      <div>退单金额：￥{{nowitem.amount}}</div>
+      <div>退还保证金：￥{{nowitem.amount}}</div>
       <div>扣除红利：￥{{nowitem.awardAmount}}</div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible2 = false">取 消</el-button>
@@ -199,31 +176,24 @@
       </span>
     </el-dialog>
     <!-- 补单 -->
-    <el-dialog title="补单" :visible.sync="dialogVisible3" width="40%" center>
-      <div class="item" v-if="nowitem.state!=5&&nowitem.state!=8">是否补单？本订单将成功完成。</div>
-      <div v-if="nowitem.state!=5&&nowitem.state!=8">扣除冻结保证金：￥{{nowitem.amount}}</div>
-      <div v-if="nowitem.state!=5&&nowitem.state!=8">发放红利：￥{{nowitem.awardAmount}}</div>
-      <el-form :inline="true">
-        <el-form-item label="补单金额">
-          <el-input v-model="postData.amount" type="number" size="small"></el-input>
-        </el-form-item>
-      </el-form>
-      <div>请输入需要补充的金额（可以为负值，补单订单将立即成功完成）。</div>
+    <el-dialog title="补单" :visible.sync="dialogVisible3" width="30%" center>
+      <div>确认补单么？</div>
+      <div>
+        <el-form :inline="true">
+          <el-form-item label="补单金额">
+            <el-input v-model="postData.amount" type="number"></el-input>
+          </el-form-item>
+        </el-form>
+      </div>
+      <div>扣除冻结保证金：￥{{nowitem.amount}}</div>
+      <div>发放红利：￥{{nowitem.awardAmount}}</div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible2 = false">取 消</el-button>
         <el-button type="primary" @click="submitrepair">确 定</el-button>
       </span>
     </el-dialog>
-    <!-- 完成 -->
-    <el-dialog title="完成订单" :visible.sync="dialogVisible5" width="40%" center>
-      <div class="item">是否完成订单？订单将成功完成。</div>
-      <div>订单金额: ￥{{nowitem.amount}}</div>
-      <div>用户保证金: ￥{{nowitem.amount}}</div>
-      <div>发放红利：￥{{nowitem.awardAmount}}</div>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible2 = false">取 消</el-button>
-        <el-button type="primary" @click="finish">确 定</el-button>
-      </span>
+    <el-dialog :visible.sync="dialogVisible4" width="30%" :before-close="closeloding">
+      <div v-loading="dialogVisible4" element-loading-text="等待接单" style="height:300px"></div>
     </el-dialog>
   </div>
 </template>
@@ -250,14 +220,13 @@ export default {
         mobile: null,
         cpId: null
       },
-      skfs: [],
       dialogVisible: false,
       dialogVisible2: false,
       dialogVisible3: false,
       dialogVisible4: false,
-      dialogVisible5: false,
       qrcode: null,
       title: null,
+      qrcodeinfo: {},
       typeCN: {
         bank: "银行卡",
         alipay: "支付宝",
@@ -273,9 +242,7 @@ export default {
         { value: 4, label: "关闭" },
         { value: 5, label: "完成" },
         { value: 6, label: "已查看" },
-        { value: 7, label: "已支付" },
-        { value: 100, label: "待处理" },
-        { value: 101, label: "问题订单" }
+        { value: 7, label: "已支付" }
       ],
       pageDate: { pageSize: 0, pages: 10, pageNum: 1 },
       tableData: [],
@@ -284,70 +251,83 @@ export default {
         amount: null
       },
       nowitem: {},
-      qrcodeinfo: {}
+      urldata: {},
+      payUrl: "",
+      timeNmae: null
     };
   },
   watch: {},
   created() {
+    console.log(this.stateCN)
     this.roleId = getRoleId();
-    if (sessionStorage.getItem("state")) {
-      this.searchData.state = Number(sessionStorage.getItem("state"));
-      sessionStorage.removeItem("state");
-    }
-    if (sessionStorage.getItem("cpId")) {
-      this.searchData.cpId = Number(sessionStorage.getItem("cpId"));
-      sessionStorage.removeItem("cpId");
-    }
-    if (sessionStorage.getItem("userid")) {
-      this.searchData.uid = Number(sessionStorage.getItem("userid"));
-      sessionStorage.removeItem("userid");
-    }
-    if (sessionStorage.getItem("day")) {
-      this.searchData.createStartDate = sessionStorage.getItem("day");
-      this.searchData.createEndDate = sessionStorage.getItem("day");
-      sessionStorage.removeItem("day");
-    }
+    this.searchData.cpId = JSON.parse(sessionStorage.getItem("logininfo")).cpId;
     this.getList();
   },
   methods: {
-    openskfs(info) {
-      if (info.state == 0) {
-        this.$message.error("未接单");
-      } else {
-        this.skfs = info;
-        this.dialogVisible4 = true;
-      }
-    },
-    finishdialog(info) {
-      this.nowitem = info;
-      this.dialogVisible5 = true;
-    },
-    finish() {
-      var _this = this;
-      var info = this.nowitem;
-      var data = { id: info.id };
-      this.postAxios("order/finish", data).then(res => {
-        var str = res.code == 0 ? "success" : "error";
-        this.$message({
-          type: str,
-          duration: 2000,
-          message: res.message,
-          onClose: function() {
-            _this.dialogVisible5 = false;
-            _this.getList();
-          }
-        });
+    payurl(info) {
+      var data = {
+        cp_id: info.cpId,
+        order_id: info.orderId
+      };
+      this.postAxios("cp/payment/param/get", data).then(res => {
+        if (res.code == 0) {
+          this.payUrl = res.data;
+          this.urldata = this.parseQueryString(res.data);
+          this.getDetail();
+        }
       });
     },
-    watchqrcode(info) {
-      this.qrcodeinfo = info;
-      this.qrcode = "https://res.zhifutongzhushou.com" + info.certImg;
-      // this.qrcodeTitle = this.typeCN[info.channel];
-      this.dialogVisible = true;
+    parseQueryString(url) {
+      var params = {};
+      var arr = url.split("?");
+      if (arr.length <= 1) {
+        return params;
+      }
+      arr = arr[1].split("&");
+      for (var i = 0, l = arr.length; i < l; i++) {
+        var a = arr[i].split("=");
+        params[a[0]] = a[1];
+      }
+      return params;
+    },
+    getDetail() {
+      var _this = this;
+      var postData = {
+        cpId: _this.urldata.cpId,
+        orderId: _this.urldata.orderId,
+        time: _this.urldata.time,
+        nonce: _this.urldata.nonce,
+        sign: _this.urldata.sign
+      };
+      var postUrl = "https://www.zhifutongzhushou.com/api/order/cp/get";
+      for (var key in postData) {
+        if (postUrl.indexOf("?") < 0) {
+          postUrl = postUrl + "?" + key + "=" + postData[key];
+        } else {
+          postUrl = postUrl + "&" + key + "=" + postData[key];
+        }
+      }
+      this.postAxios3(postUrl, {}).then(res => {
+        clearInterval(_this.timeNmae);
+        this.dialogVisible4 = true;
+        if (res.code == 0 && res.data.state != 0) {
+          this.dialogVisible4 = false;
+          // loading.close();
+          window.open(this.payUrl);
+        } else {
+          this.timeNmae = setInterval(() => {
+            _this.getDetail();
+          }, 5000);
+        }
+      });
+    },
+    closeloding() {
+      clearInterval(this.timeNmae);
+      this.dialogVisible4 = false;
     },
     qrcodeshow(info) {
       if (info.state == 0) {
-        this.$message.error("未接单");
+        this.payurl(info);
       } else {
         this.qrcodeinfo = info.orderPayeeAccount;
         this.qrcode =
@@ -366,7 +346,6 @@ export default {
     },
     submitback() {
       var data = { id: this.nowitem.id };
-      var _this=this;
       this.postAxios("order/back", data).then(res => {
         this.$message({
           type: "error",
@@ -404,7 +383,6 @@ export default {
     },
     onSubmit() {
       this.pageDate.pageNum = 1;
-      this.pageDate = { pageSize: 0, pages: 1, pageNum: 1 };
       this.getList();
     },
     getList() {
@@ -423,10 +401,6 @@ export default {
 
 <style lang="scss" scoped>
 .button {
-  width: 75px;
-  margin: 3px;
-}
-.line {
-  line-height: 45px;
+  width: 80px;
 }
 </style>
